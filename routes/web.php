@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
 
 // Authenticated + password change enforced
 Route::middleware(['auth', 'must.change.password'])->group(function () {
-    Route::get('/workspace', fn () => view('workspace'))->name('workspace');
+    Route::view('/workspace', 'workspace')->name('workspace');
 
     // Request runner (JSON) — rate limited to 60 requests/min per user
     Route::post('/run', [RunnerController::class, 'run'])->name('run')->middleware('throttle:run');
