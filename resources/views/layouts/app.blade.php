@@ -6,89 +6,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Freeman') }}@hasSection('title') — @yield('title')@endif</title>
     <link rel="icon" type="image/png" href="{{ asset('images/Freeman-logo.png') }}">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="{{ asset('js/freeman-utils.js') }}"></script>
     <script src="{{ asset('js/freeman-store.js') }}"></script>
     <script src="{{ asset('js/freeman-shell.js') }}"></script>
     <script src="{{ asset('js/freeman-sidebar.js') }}"></script>
     <script src="{{ asset('js/freeman-request-builder.js') }}"></script>
     <script src="{{ asset('js/freeman-modals.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsonpath-plus/dist/index-browser-umd.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        /* ── Freeman Design Tokens ──────────────────────────────── */
-        :root {
-            --color-bg-base:             #1e1e1e;
-            --color-bg-body-input:       #1a1a1a;
-            --color-bg-surface:          #252525;
-            --color-bg-elevated:         #2c2c2c;
-            --color-bg-hover-subtle:     #2a2a2a;
-            --color-bg-hover-row:        #2e2e2e;
-            --color-bg-btn:              #383838;
-            --color-bg-active-item:      #37373d;
-            --color-bg-danger-hover:     #2a1515;
-            --color-bg-badge:            #333333;
-
-            --color-border-subtle:       #3a3a3a;
-            --color-border-menu:         #444444;
-            --color-border-btn:          #505050;
-            --color-border-input:        #555555;
-            --color-border-strong:       #707070;
-
-            --color-text-primary:        #cccccc;
-            --color-text-secondary:      #c8c8c8;
-            --color-text-input:          #d4d4d4;
-            --color-text-muted-1:        #aaaaaa;
-            --color-text-muted-2:        #999999;
-            --color-text-muted-3:        #888888;
-            --color-text-muted-4:        #777777;
-            --color-text-muted-5:        #666666;
-            --color-text-muted-6:        #555555;
-            --color-text-muted-7:        #4a4a4a;
-
-            --color-brand:               #e8602c;
-            --color-brand-hover:         #d4541f;
-            --color-folder:              #b8860b;
-
-            --color-success:             #4ade80;
-            --color-env-inactive:        #444444;
-            --color-danger:              #ef4444;
-            --color-danger-light:        #f87171;
-            --color-danger-pale:         #fca5a5;
-
-            --color-brand-tint-bg:       rgba(232, 96,  44, 0.10);
-            --color-brand-tint-border:   rgba(232, 96,  44, 0.20);
-            --color-brand-tint-badge:    rgba(232, 96,  44, 0.25);
-            --color-brand-tint-focus:    rgba(232, 96,  44, 0.60);
-            --color-brand-tint-url-bg:   rgba(232, 96,  44, 0.18);
-            --color-brand-tint-url-text: #e8a07a;
-            --color-success-tint-bg:     rgba( 74, 222, 128, 0.10);
-            --color-success-tint-border: rgba( 74, 222, 128, 0.25);
-            --color-danger-tint-bg:      rgba(239,  68,  68, 0.08);
-            --color-danger-tint-border:  rgba(239,  68,  68, 0.25);
-            --color-danger-tint-bg2:     rgba(239,  68,  68, 0.10);
-
-            --color-syntax-key:          #9cdcfe;
-            --color-syntax-str:          #ce9178;
-            --color-syntax-num:          #b5cea8;
-            --color-syntax-bool:         #569cd6;
-            --color-syntax-punct:        #d4d4d4;
-            --color-syntax-xml-tag:      #4ec9b0;
-            --color-syntax-xml-bracket:  #808080;
-            --color-syntax-comment:      #6a9955;
-        }
-
-        [x-cloak] { display: none !important; }
-
-        /* Thin dark scrollbars */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--color-bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--color-border-menu); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted-3); }
-
-        /* Monospace code rendering in response body */
-        .response-body { tab-size: 2; }
-    </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased overflow-hidden">
     @yield('content')
