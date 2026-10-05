@@ -1,4 +1,7 @@
 // freeman-shell.js
+import Alpine from 'alpinejs';
+import { methodColor } from './freeman-utils.js';
+
 // workspaceShell — root Alpine component for workspace.blade.php.
 // Owns layout state (sidebarTab, env menus) and proxies shared store data to templates.
 

@@ -1,4 +1,6 @@
 // freeman-store.js
+import Alpine from 'alpinejs';
+
 // Alpine.store('workspace') — shared state, data loading, and core tab management.
 // All components read shared data and call shared methods through this store.
 

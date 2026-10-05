@@ -14,7 +14,7 @@ Always read the imported context files below before starting any task.
 Built with Laravel 12, it allows teams to manage and execute REST API requests from a browser with no desktop install required.
 
 - **Backend:** Laravel 12 (PHP)
-- **Frontend:** Blade + Alpine.js + Tailwind CSS (no build step — CDN only)
+- **Frontend:** Blade + Alpine.js + Tailwind CSS, built with Vite
 - **Database:** SQLite (default, ships with Laravel)
 - **Auth:** Laravel session-based auth (no JWT — web app)
 - **HTTP Requests:** Laravel proxies all outgoing API calls via Guzzle (bypasses CORS)
@@ -56,7 +56,7 @@ php artisan test --filter TestName
 - `routes/web.php` for all routes (no API routes — this is a web app with Blade views)
 - SQLite database at `database/database.sqlite`
 - All outgoing HTTP requests go through `app/Services/RequestRunnerService.php` via Guzzle
-- No frontend build step — Tailwind and Alpine loaded via CDN in the main layout
+- Frontend assets are built with Vite; Alpine and workspace modules are imported by `resources/js/app.js`
 
 ---
 
@@ -66,7 +66,7 @@ php artisan test --filter TestName
 - **Repository pattern** for all DB queries
 - **Form Requests** for all validation
 - One Blade layout: `resources/views/layouts/app.blade.php`
-- Alpine.js workspace components live in `public/js/` (see DD-014): store + one file per component. Simple one-off UI state (e.g. a dropdown toggle) stays inline in Blade
+- Alpine.js workspace components live in `resources/js/` (see DD-014): store + one file per component. Simple one-off UI state (e.g. a dropdown toggle) stays inline in Blade
 - All responses from `RequestRunnerService` stored in `request_logs` table for history
 - Use named routes everywhere
 - PHPUnit for all tests — test DB is in-memory SQLite (configured in `phpunit.xml`)
