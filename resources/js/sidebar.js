@@ -1,6 +1,6 @@
 // freeman-sidebar.js
 import Alpine from 'alpinejs';
-import { methodColor } from './freeman-utils.js';
+import { methodColor } from './utils.js';
 
 // sidebarComponent — sidebar UI state, collection/folder CRUD, import/export.
 // Reads shared data from Alpine.store('workspace'). Communicates via window events.

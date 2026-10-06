@@ -1,12 +1,12 @@
 import Alpine from 'alpinejs';
 import { JSONPath } from 'jsonpath-plus';
 import './bootstrap';
-import './freeman-utils.js';
-import './freeman-store.js';
-import './freeman-shell.js';
-import './freeman-sidebar.js';
-import './freeman-request-builder.js';
-import './freeman-modals.js';
+import './utils.js';
+import './store.js';
+import './shell.js';
+import './sidebar.js';
+import './request-builder.js';
+import './modals.js';
 
 window.Alpine = Alpine;
 window.JSONPath = JSONPath;
