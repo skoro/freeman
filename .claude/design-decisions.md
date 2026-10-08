@@ -16,9 +16,9 @@ _This file is auto-imported by CLAUDE.md. Log every significant architectural de
 
 ---
 
-## DD-003 — No frontend build step (CDN only)
-**Decision:** Tailwind CSS and Alpine.js loaded via CDN. No Vite, no npm for frontend.
-**Reason:** This is an open-source self-hosted tool. Eliminating the build step makes contribution and deployment simpler. Trade-off is no tree-shaking on Tailwind, which is acceptable for an internal tool.
+## DD-003 — Blade and Alpine.js frontend
+**Decision:** Keep the frontend as server-rendered Blade with Alpine.js rather than adopting a separate SPA framework. Frontend assets are compiled with Vite (see DD-018).
+**Reason:** Blade and Alpine.js provide the interactive workspace without introducing a separate frontend application or API client.
 
 ---
 
@@ -78,7 +78,7 @@ _This file is auto-imported by CLAUDE.md. Log every significant architectural de
 ---
 
 ## DD-014 — Alpine.js split into Alpine.store + Alpine.data components
-**Decision:** Refactored the monolithic `workspace()` Alpine.js function (~1490 lines in a single Blade partial) into a shared `Alpine.store('workspace')` backed by six focused `Alpine.data()` components, each in its own file under `public/js/`.
+**Decision:** Refactored the monolithic `workspace()` Alpine.js function (~1490 lines in a single Blade partial) into a shared `Alpine.store('workspace')` backed by six focused `Alpine.data()` components, each in its own file under `resources/js/`.
 **Components:**
 - `Alpine.store('workspace')` — shared state (tabs, collections, environments) + core methods (load, openRequest, persistTabs)
 - `workspaceShell` — root layout component: tab bar actions, env switching, Ctrl+S dispatch
@@ -88,7 +88,7 @@ _This file is auto-imported by CLAUDE.md. Log every significant architectural de
 - `collectionVarsModalComponent` — collection variables modal
 **Reason:** The monolithic approach made it impossible to navigate or reason about the code. Separate components establish clear ownership of state and enforce explicit cross-component contracts (via `Alpine.store` reads and `window.dispatchEvent` for sibling communication).
 **Cross-component events:** `freeman:save-request` (shell/builder → saveModal), `freeman:open-collection-vars` (sidebar → collectionVarsModal), `freeman:tab-closed` (shell → requestBuilder for fileSelectedMap cleanup).
-**File locations:** `public/js/` (not `resources/js/`) because DD-003 means no build step — files are served directly via `asset()`.
+**File locations:** `resources/js/`; modules are imported by `resources/js/app.js` and compiled through Vite.
 
 ---
 
@@ -101,14 +101,14 @@ _This file is auto-imported by CLAUDE.md. Log every significant architectural de
 ## DD-015 — Tab bar right-click context menu with batched unsaved-changes warning
 **Decision:** Right-clicking a request tab opens a context menu (Close, Close Others, Close to the Right, Close to the Left, Close All) styled to match the existing user/env dropdown menus (`workspace/topbar.blade.php`). Items that would be a no-op (e.g. "Close to the Right" on the last tab) are greyed out. Bulk-close actions that would close one or more dirty tabs show a single batched `window.confirm()` ("N tab(s) have unsaved changes...") rather than one confirm per tab.
 **Reason:** Matches the VS Code/Postman tab convention users expect. A single batched confirm keeps the existing lightweight `window.confirm()` pattern (already used for single-tab close) consistent instead of introducing a new custom modal component just for multi-tab warnings.
-**Implementation:** `removeTabs()` batch-removal added to `Alpine.store('workspace')` (`public/js/freeman-store.js`); `_closeTabs()` helper + `openTabContextMenu`/`closeTabContextMenu` state added to `workspaceShell` (`public/js/freeman-shell.js`); menu markup in `resources/views/workspace.blade.php`. This is the first `@contextmenu` usage in the codebase.
+**Implementation:** `removeTabs()` batch-removal added to `Alpine.store('workspace')` (`resources/js/freeman-store.js`); `_closeTabs()` helper + `openTabContextMenu`/`closeTabContextMenu` state added to `workspaceShell` (`resources/js/freeman-shell.js`); menu markup in `resources/views/workspace.blade.php`. This is the first `@contextmenu` usage in the codebase.
 
 ---
 
 ## DD-016 — Header/param value cap raised to 8192 chars; frontend surfaces real validation errors
 **Decision:** `headers.*.value` (in `RunRequestRequest`, `StoreRequestRequest`, `UpdateRequestRequest`) and `params.*.value` (in `StoreRequestRequest`, `UpdateRequestRequest`) were capped at `max:1000`, silently rejecting real-world bearer tokens/JWTs/base64 blobs over 1000 characters with a 422. Raised to `max:8192` — generous enough for real tokens while still matching the practical header-size ceilings most web servers/proxies enforce (e.g. nginx's default 8k header buffer), so it isn't unbounded.
 **Reason:** A user reported "Request Failed" with no detail when pasting a ~1200-char auth token into a header field. Root cause was the 1000-char cap rejecting the request before it ever reached `RequestRunnerService`.
-**Contributing bug also fixed:** `public/js/freeman-request-builder.js`'s `sendRequest()` assigned `await res.json()` straight to `tab.response` with no `res.ok` check, so Laravel's default validation-error body (`{message, errors}`, no `success`/`error` keys) rendered as a blank "Request Failed" card (`resources/views/workspace/response-panel.blade.php`) instead of showing the real message. Now, any non-2xx response without a `success` key is normalized into `{success:false, error: <first validation message or data.message>, ...}` before being stored on `tab.response`, so future validation failures on `/run` are self-diagnosing instead of silent.
+**Contributing bug also fixed:** `resources/js/freeman-request-builder.js`'s `sendRequest()` assigned `await res.json()` straight to `tab.response` with no `res.ok` check, so Laravel's default validation-error body (`{message, errors}`, no `success`/`error` keys) rendered as a blank "Request Failed" card (`resources/views/workspace/response-panel.blade.php`) instead of showing the real message. Now, any non-2xx response without a `success` key is normalized into `{success:false, error: <first validation message or data.message>, ...}` before being stored on `tab.response`, so future validation failures on `/run` are self-diagnosing instead of silent.
 
 ---
 
@@ -117,3 +117,9 @@ _This file is auto-imported by CLAUDE.md. Log every significant architectural de
 **Reason:** Follow-up to DD-016 — a user asked to confirm environment/collection variables (used for `{{VAR}}` substitution) also accept large values (e.g. long tokens stored once and reused across many requests), ideally unlimited.
 **Verified, not assumed:** Tested directly — SQLite has no VARCHAR length enforcement (dynamic/manifest typing), so the DB layer already accepted arbitrary-length values before this change; the `max:2048` rule was the only real blocker. The column-type change to `text` is schema clarity/future-portability, not a functional fix.
 **Migration approach:** Avoids `Schema::table()->change()` (requires `pragma_table_xinfo`, SQLite ≥ 3.26.0, and `doctrine/dbal` on some engines) — instead recreates each table via raw `DB::statement()` (`CREATE ... _new` → `INSERT ... SELECT *` → `DROP` → `RENAME`), matching the established pattern in `2026_04_01_145542_make_requests_url_nullable.php`. Both `up()` and `down()` guard on the column's current declared type (via `PRAGMA table_info`) so re-running is a no-op.
+
+---
+
+## DD-018 — Frontend JavaScript modules are bundled from `resources/js`
+**Decision:** Keep all application JavaScript in `resources/js/` and import the workspace modules from `resources/js/app.js`, which is loaded through Vite. Utility functions used directly by Blade/Alpine expressions and generated inline handlers remain exposed on `window`.
+**Reason:** A single Vite entry provides consistent module loading and bundling while preserving the existing Blade and Alpine integration points.

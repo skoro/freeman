@@ -99,18 +99,18 @@ _This file is auto-imported by CLAUDE.md. Keep it updated after every feature._
 
 ## Frontend JS Files
 
-Located in `public/js/` — served directly via `asset()`, no build step (see DD-003, DD-014).
+Located in `resources/js/` and imported by `resources/js/app.js`; built and loaded through Vite (see DD-014, DD-018).
 
 | File | Alpine registration | Responsibility |
 |---|---|---|
-| `freeman-utils.js` | Global functions | `methodColor`, `statusColor`, `statusText`, `escHtml`, `detectContentType`, `varLabel`, `responseSize` |
-| `freeman-store.js` | `Alpine.store('workspace')` | Shared state (tabs, collections, environments), core tab/load methods |
-| `freeman-shell.js` | `Alpine.data('workspaceShell')` | Root layout, tab bar actions, env switching, Ctrl+S dispatch |
-| `freeman-sidebar.js` | `Alpine.data('sidebarComponent')` | Sidebar state, collection/folder CRUD, import/export |
-| `freeman-request-builder.js` | `Alpine.data('requestBuilderComponent')` | Send request, URL highlight, var autocomplete, file upload, response rendering |
-| `freeman-modals.js` | `Alpine.data('saveModalComponent')` + `Alpine.data('collectionVarsModalComponent')` | Save-request modal, collection variables modal |
+| `utils.js` | Global functions | `methodColor`, `statusColor`, `statusText`, `escHtml`, `detectContentType`, `varLabel`, `responseSize` |
+| `store.js` | `Alpine.store('workspace')` | Shared state (tabs, collections, environments), core tab/load methods |
+| `shell.js` | `Alpine.data('workspaceShell')` | Root layout, tab bar actions, env switching, Ctrl+S dispatch |
+| `sidebar.js` | `Alpine.data('sidebarComponent')` | Sidebar state, collection/folder CRUD, import/export |
+| `request-builder.js` | `Alpine.data('requestBuilderComponent')` | Send request, URL highlight, var autocomplete, file upload, response rendering |
+| `modals.js` | `Alpine.data('saveModalComponent')` + `Alpine.data('collectionVarsModalComponent')` | Save-request modal, collection variables modal |
 
-All files register via `document.addEventListener('alpine:init', ...)` and are loaded before the Alpine CDN `<script defer>` in `layouts/app.blade.php`.
+Components register via `document.addEventListener('alpine:init', ...)`; `app.js` imports all modules before calling `Alpine.start()`. Utility functions used by Blade expressions and inline handlers are exposed on `window`.
 
 ---
 

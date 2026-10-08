@@ -1,4 +1,7 @@
 // freeman-request-builder.js
+import Alpine from 'alpinejs';
+import { detectContentType, escHtml, renderFoldableJson } from './utils.js';
+
 // requestBuilderComponent — request/response panel state and logic.
 // Mounted on the wrapper div that contains workspace/request-builder.blade.php.
 

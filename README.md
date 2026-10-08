@@ -28,13 +28,15 @@ No desktop install. No data leaves your network. Your team accesses it from any 
 |---|---|
 | PHP | 8.2 or higher |
 | Composer | 2.x |
+| Node.js | 20.19+ or 22.12+ |
+| npm | 10 or higher |
 | PHP extension: `pdo_sqlite` | required |
 | PHP extension: `openssl` | required |
 | PHP extension: `curl` | required |
 | PHP extension: `mbstring` | required |
 | PHP extension: `xml` | required |
 
-> No Node.js, no npm, no build step. Tailwind CSS and Alpine.js are loaded from CDN.
+> Node.js and npm are required to install and build the frontend assets with Vite.
 
 ### Installing missing PHP extensions
 
@@ -77,7 +79,14 @@ composer install
 
 > **Do this first.** The install wizard (`php artisan freeman:install`) will attempt to run `composer install` automatically, but on some servers (restricted PATH, missing `composer` in shell, etc.) this step can fail silently. Running it manually first avoids any issues.
 
-### 3. Run the install wizard
+### 3. Install and build frontend assets
+
+```bash
+npm install
+npm run build
+```
+
+### 4. Run the install wizard
 
 ```bash
 php artisan freeman:install
@@ -92,7 +101,7 @@ The wizard will:
 5. Run all database migrations
 6. Prompt you to create your super admin account
 
-### 4. Set your app URL
+### 5. Set your app URL
 
 Open `.env` and update:
 
@@ -100,13 +109,16 @@ Open `.env` and update:
 APP_URL=https://your-domain.com
 ```
 
-### 5. Start the server
+### 6. Start the server
 
 **Development**
 ```bash
 php artisan serve
 ```
 Then open [http://localhost:8000](http://localhost:8000) in your browser.
+
+For frontend development, run `npm run dev` (or use `composer run dev` to start
+the Laravel services and Vite together).
 
 **Production (recommended: nginx + php-fpm)**
 

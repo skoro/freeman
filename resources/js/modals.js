@@ -1,4 +1,6 @@
 // freeman-modals.js
+import Alpine from 'alpinejs';
+
 // saveModalComponent — save-request modal state and save logic.
 // collectionVarsModalComponent — collection variables modal.
 // Both listen for window events dispatched by other components.

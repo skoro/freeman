@@ -1,11 +1,11 @@
 // freeman-utils.js
 // Pure utility functions — no Alpine dependency. Available as globals to all components.
 
-function methodColor(method) {
+export function methodColor(method) {
     return { GET: 'text-green-400', POST: 'text-yellow-400', PUT: 'text-blue-400', PATCH: 'text-purple-400', DELETE: 'text-red-400' }[method] || 'text-gray-400';
 }
 
-function statusColor(status) {
+export function statusColor(status) {
     if (!status) return 'text-gray-400';
     if (status < 300) return 'text-green-400';
     if (status < 400) return 'text-blue-400';
@@ -13,7 +13,7 @@ function statusColor(status) {
     return 'text-red-400';
 }
 
-function statusLabel(status) {
+export function statusLabel(status) {
     if (!status) return 'text-gray-600';
     if (status < 300) return 'text-green-700';
     if (status < 400) return 'text-blue-700';
@@ -21,12 +21,12 @@ function statusLabel(status) {
     return 'text-red-700';
 }
 
-function statusText(status) {
+export function statusText(status) {
     const map = { 200:'OK', 201:'Created', 204:'No Content', 301:'Moved', 302:'Found', 304:'Not Modified', 400:'Bad Request', 401:'Unauthorized', 403:'Forbidden', 404:'Not Found', 405:'Method Not Allowed', 409:'Conflict', 422:'Unprocessable', 429:'Too Many Requests', 500:'Internal Server Error', 502:'Bad Gateway', 503:'Service Unavailable' };
     return map[status] ? map[status] : '';
 }
 
-function responseSize(body) {
+export function responseSize(body) {
     if (!body) return '0 B';
     const b = new Blob([body]).size;
     if (b < 1024)    return b + ' B';
@@ -34,14 +34,14 @@ function responseSize(body) {
     return (b / 1048576).toFixed(1) + ' MB';
 }
 
-function escHtml(s) {
+export function escHtml(s) {
     return String(s)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 }
 
-function detectContentType(headers) {
+export function detectContentType(headers) {
     if (!headers) return 'text';
     const entry = Object.entries(headers).find(([k]) => k.toLowerCase() === 'content-type');
     if (!entry) return 'text';
@@ -55,7 +55,7 @@ function detectContentType(headers) {
     return 'text';
 }
 
-function varLabel(name) {
+export function varLabel(name) {
     return '{{' + name + '}}';
 }
 
@@ -74,14 +74,14 @@ function varLabel(name) {
 
 let _jfId = 0, _jfFilter = '', _jfMatchCount = 0;
 
-function renderFoldableJson(value, filter) {
+export function renderFoldableJson(value, filter) {
     _jfId         = 0;
     _jfFilter     = filter ? filter.trim().toLowerCase() : '';
     _jfMatchCount = 0;
     return _jfNode(value, 0);
 }
 
-function jfMatchCount() { return _jfMatchCount; }
+export function jfMatchCount() { return _jfMatchCount; }
 
 function _jfHighlight(raw, q) {
     if (!q) return escHtml(raw);
@@ -161,7 +161,7 @@ function _jfNode(val, indent) {
     return escHtml(String(val));
 }
 
-function jfToggle(id) {
+export function jfToggle(id) {
     const body   = document.getElementById(`jf-b-${id}`);
     const sum    = document.getElementById(`jf-s-${id}`);
     const close  = document.getElementById(`jf-c-${id}`);
@@ -173,3 +173,17 @@ function jfToggle(id) {
     close.style.display = open ? 'none' : '';
     if (toggle) toggle.textContent = open ? '▸' : '▾';
 }
+
+Object.assign(window, {
+    methodColor,
+    statusColor,
+    statusLabel,
+    statusText,
+    responseSize,
+    escHtml,
+    detectContentType,
+    varLabel,
+    renderFoldableJson,
+    jfMatchCount,
+    jfToggle,
+});
