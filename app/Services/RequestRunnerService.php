@@ -71,6 +71,7 @@ class RequestRunnerService
             'timeout'         => 30,
             'connect_timeout' => 10,
             'http_errors'     => false, // Surface 4xx/5xx as responses, not exceptions
+            'verify'          => resource_path('cacert.pem'), // TODO: allow per-request override in v2
             // TODO: expose verify_ssl as a per-request option in v2
         ]);
 
